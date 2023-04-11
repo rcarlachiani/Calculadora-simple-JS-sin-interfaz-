@@ -1,0 +1,29 @@
+.calculator-body {
+    width: 300px;
+    height: 450px;
+    border: 0.8px solid black;
+}
+
+.calculator-screen {
+    background-color: rgb(61, 61, 61);
+    height: 100px;
+}
+
+.result {
+    font-size: 50px;
+}
+
+.calculator-button {
+    background-color: rgb(134, 134, 134);
+    height: 70px;
+}
+
+.calculator-button-or {
+    background-color: orange;
+    height: 70px;
+}
+
+.calculator-button-dark {
+    background-color: rgb(91, 91, 91);
+    height: 70px;
+}
