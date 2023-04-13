@@ -1,47 +1,88 @@
 $(function () {
-    // let value1 = ;
-    // let operator = ;
-    // let value2  = parseInt();
+    let entry;
+    let firstValue;
+    let secondValue;
+    let result;
+    let operatorClicked = false; 
+    let typeOfOperator;
 
-    $('button').on('click', function() {
-        if ($(this).attr('id') !== "ac" && $(this).attr('id') !== "+/-" && $(this).attr('id') !== "%" && $(this).attr('id') !== "+" && $(this).attr('id') !== "x" && $(this).attr('id') !== "-" && $(this).attr('id') !== "+" && $(this).attr('id') !== "=") {
-            if ($('.result').text() !== '0') {
-                let clickedValue = $(this).text()
-                let updatedScreen = $('.result').text() + clickedValue
-                $('.result').text(updatedScreen)
-            } else {
-                $('.result').text($(this).text())
-            }
-        } else if ($(this).attr('id') == "ac") {
-            $('.result').text(0)
+    $('.number, .coma').on('click', function() {
+        if (operatorClicked === false) {
+            entry = parseInt($(this).text());
+            firstValue = parseInt('' + (parseInt($('.display').text())) + entry);
+            $('.display').text(firstValue);
+        } else {
+            entry = parseInt($(this).text());
+            secondValue = parseInt('' + (parseInt($('.display').text())) + entry);
+            $('.display').text(secondValue);
         }
+    })
 
+    $('.reset').on('click', function() {
+        $('.display').text(0);
+        operatorClicked = false;
+        firstValue = 0;
+        secondValue = 0;
+        result = 0;
+    })
+
+    $('.operator').on('click', function() {
+        operatorClicked = true;
+        typeOfOperator = $(this).attr('id')
+        $('.display').text(0);
+
+        if (!!result) {
+            firstValue = result
+        }
+    })
+
+    $('.negative').on('click', function() {
+        if (operatorClicked === false) {
+            if (!!firstValue && firstValue >= 0) {
+                firstValue = -Math.abs(firstValue);
+                $('.display').text(firstValue);
+            } else if (!!firstValue && firstValue < 0) {
+                firstValue = Math.abs(firstValue);
+                $('.display').text(firstValue);
+            }
+        } else {
+            if (!!secondValue && secondValue >= 0) {
+                secondValue = -Math.abs(secondValue);
+                $('.display').text(secondValue);
+            } else if (!!secondValue && secondValue < 0) {
+                secondValue = Math.abs(secondValue);
+                $('.display').text(secondValue);
+            }
+        }
+        
     })
     
-    // switch (entrada2) {
-    //     case "+":
-    //         let resultado = entrada + entrada3
-    //         alert (resultado);
-    //         break;
+    $('.equal').on('click', function() {
+        switch (typeOfOperator) {
+            case "+":
+                result = parseInt(firstValue) + parseInt(secondValue);
+                $('.display').text(result);
+                break;
 
-    //     case "-":
-    //         let resultado2 = entrada - entrada3
-    //         alert (resultado2);
-    //         break;
+            case "-":
+                result = parseInt(firstValue) - parseInt(secondValue);
+                $('.display').text(result);
+                break;
 
-    //     case "*":
-    //         let resultado3 = entrada * entrada3
-    //         alert (resultado3);
-    //         break;
+            case "x":
+                result = parseInt(firstValue) * parseInt(secondValue);
+                $('.display').text(result);
+                break;
+                
+            case "%":
+                result = parseInt(firstValue) / parseInt(secondValue);
+                $('.display').text(result);
+                break;
 
-    //     case "/":
-    //         let resultado4 = entrada / entrada3
-    //         alert (resultado4);
-    //         break;
-
-    //     default:
-    //         alert ("Suerte")
-    //         break;
-    // }
+            default:
+                console.log('End')
+                break;
+        }
+    })
 })
 

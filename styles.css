@@ -9,8 +9,9 @@
     height: 100px;
 }
 
-.result {
+.display {
     font-size: 50px;
+    max-height: 100px;
 }
 
 .calculator-button {
