@@ -23,6 +23,7 @@ body {
 .date {
     font-size: 15px;
     width: 100%;
+    min-width: 160px;
 }
 
 .calculator-body {
@@ -52,7 +53,7 @@ body {
 .calculator-button:active, 
 .calculator-button-or:active, 
 .calculator-button-dark:active {
-    box-shadow: inset 2px 3px 3px rgb(26, 26, 26);
+    background-color: rgb(150, 150, 150);
 }
 
 .calculator-button-or {

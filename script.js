@@ -1,113 +1,82 @@
 $(function () {
-
-    function getDateTime() {
-        var now = new Date(); 
-        var year = now.getFullYear();
-        var month = now.getMonth()+1; 
-        var day = now.getDate();
-        var hour = now.getHours();
-        var minute = now.getMinutes();
-        var second = now.getSeconds(); 
-
-        if (month.toString().length == 1) {
-            month = '0' + month;
-        } else if (day.toString().length == 1) {
-            day = '0' + day;
-        } else if (hour.toString().length == 1) {
-            hour = '0' + hour;
-        } else if (minute.toString().length == 1) {
-            minute = '0' + minute;
-        } else if (second.toString().length == 1) {
-            second = '0' + second;
-        }   
-        
-        let dateTime = day + '/' + month + '/' + year + ', ' + hour + ':' + minute + ':' + second;   
-        return dateTime;
-    }
-
-    setInterval(function() {
-        currentTime = getDateTime();
-        $('.date').text(currentTime)
-    }, 1000);
-
+    // Variables
     let entry;
-    let firstValue;
-    let secondValue;
+    let firstValueEntry = [];
+    let secondValueEntry = [];
+    let firstValueToCalculate;
+    let secondValueToCalculate;
     let result;
     let operatorClicked = false; 
     let typeOfOperator;
 
-    $('.number, .coma').on('click', function() {
+    // Calculator algorithm
+    $('.number, .comma').on('click', function() {
         if (operatorClicked === false) {
-            entry = parseInt($(this).text());
-            firstValue = parseInt('' + (parseInt($('.display').text())) + entry);
-            $('.display').text(firstValue);
+            entry = $(this).text();
+            firstValueEntry.push(entry.replace(/\s/g, ''))
+            $('.display').text((firstValueEntry.join('')));
         } else {
-            entry = parseInt($(this).text());
-            secondValue = parseInt('' + (parseInt($('.display').text())) + entry);
-            $('.display').text(secondValue);
+            entry = $(this).text();
+            secondValueEntry.push(entry.replace(/\s/g, ''));
+            $('.display').text((secondValueEntry.join('')));
         }
     })
 
     $('.reset').on('click', function() {
         $('.display').text(0);
         operatorClicked = false;
-        firstValue = 0;
-        secondValue = 0;
+        firstValueToCalculate = 0;
+        secondValueToCalculate = 0;
+        firstValueEntry = [];
+        secondValueEntry = [];
         result = 0;
     })
 
     $('.operator').on('click', function() {
         operatorClicked = true;
         typeOfOperator = $(this).attr('id')
+        firstValueToCalculate = parseFloat($('.display').text().replace(',', '.'));
+
         $('.display').text(0);
 
         if (!!result) {
-            firstValue = result
+            firstValueToCalculate = result
         }
     })
 
     $('.negative').on('click', function() {
         if (operatorClicked === false) {
-            if (!!firstValue && firstValue >= 0) {
-                firstValue = -Math.abs(firstValue);
-                $('.display').text(firstValue);
-            } else if (!!firstValue && firstValue < 0) {
-                firstValue = Math.abs(firstValue);
-                $('.display').text(firstValue);
-            }
+            firstValueEntry.unshift('-')
+            $('.display').text((firstValueEntry.join('')));
         } else {
-            if (!!secondValue && secondValue >= 0) {
-                secondValue = -Math.abs(secondValue);
-                $('.display').text(secondValue);
-            } else if (!!secondValue && secondValue < 0) {
-                secondValue = Math.abs(secondValue);
-                $('.display').text(secondValue);
-            }
+            secondValueEntry.unshift('-')
+            $('.display').text((secondValueEntry.join('')));
         }
         
     })
     
     $('.equal').on('click', function() {
+        secondValueToCalculate = parseFloat($('.display').text().replace(',', '.'));
+
         switch (typeOfOperator) {
             case "+":
-                result = parseInt(firstValue) + parseInt(secondValue);
-                $('.display').text(result);
+                result = firstValueToCalculate + secondValueToCalculate;
+                $('.display').text(result.toString().replace('.' , ','));
                 break;
 
             case "-":
-                result = parseInt(firstValue) - parseInt(secondValue);
-                $('.display').text(result);
+                result = firstValueToCalculate - secondValueToCalculate;
+                $('.display').text(result.toString().replace('.' , ','));
                 break;
 
             case "x":
-                result = parseInt(firstValue) * parseInt(secondValue);
-                $('.display').text(result);
+                result = firstValueToCalculate * secondValueToCalculate;
+                $('.display').text(result.toString().replace('.' , ','));
                 break;
                 
-            case "%":
-                result = parseInt(firstValue) / parseInt(secondValue);
-                $('.display').text(result);
+            case "/":
+                result = firstValueToCalculate / secondValueToCalculate;
+                $('.display').text(result.toString().replace('.' , ','));
                 break;
 
             default:
@@ -115,4 +84,104 @@ $(function () {
                 break;
         }
     })
+
+    // Clock algorithm
+    function getDateTime () {
+        let now = new Date(); 
+        let month = now.getMonth()+1;
+        let day = now.getDate();
+        let dayName = now.getDay();
+        let hour = now.getHours();
+        let minute = now.getMinutes();
+        let second = now.getSeconds(); 
+
+        if (month.toString().length == 1) {
+            month = '0' + month;
+        } 
+        
+        if (day.toString().length == 1) {
+            day = '0' + day;
+        } 
+        
+        if (hour.toString().length == 1) {
+            hour = '0' + hour;
+        }
+
+        if (minute.toString().length == 1) {
+            minute = '0' + minute;
+        } 
+        
+        if (second.toString().length == 1) {
+            second = '0' + second;
+        }
+
+        switch (dayName) {
+            case 1:
+                dayName = 'Mon'
+                break;
+            case 2:
+                dayName = 'Tues'
+                break;
+            case 3:
+                dayName = 'Wed'
+                break;
+            case 4:
+                dayName = 'Thur'
+                break;
+            case 5:
+                dayName = 'Fri'
+                break;
+            case 6:
+                dayName = 'Sat'
+                break;
+            default:
+                dayName = 'Sun'
+                break; 
+        }
+
+        switch (month) {
+            case '01':
+                month = 'jan.'
+                break;
+            case '02':
+                month = 'feb.'
+                break;
+            case '03':
+                month = 'mar.'
+                break;
+            case '04':
+                month = 'apr.'
+                break;
+            case '05':
+                month = 'may'
+                break;
+            case '06':
+                month = 'jun.'
+                break;
+            case '07':
+                month = 'jul.'
+                break;
+            case '08':
+                month = 'aug.'
+                break;
+            case '09':
+                month = 'sept.'
+                break;
+            case '10':
+                month = 'oct.'
+                break;
+            case '11':
+                month = 'nov.'
+                break;
+            default:
+                month = 'dec.'
+                break; 
+        }
+        
+        return (dayName + ' ' + day + ' ' + month + ' ' + hour + ':' + minute + ':' + second);
+    }
+
+    setInterval (function () {
+        $('.date').text(getDateTime())
+    }, 1000);
 })
