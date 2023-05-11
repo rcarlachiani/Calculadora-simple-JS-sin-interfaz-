@@ -1,92 +1,159 @@
 $(function () {
     // Variables
-    let entry;
+    const calculatorScreen = $('.display');
     let firstValueEntry = [];
     let secondValueEntry = [];
-    let firstValueToCalculate;
-    let secondValueToCalculate;
-    let result;
+    let firstValueToCalculate = 0;
+    let secondValueToCalculate = 0;
+    let result = 0;
     let operatorClicked = false; 
+    let firstIsNegative = false;
+    let secondIsNegative = false;
     let typeOfOperator;
+
+    // Function that formats the decimals results 
+    const formatNumber = (number) => {
+        let decimalString = number.toString().split('.')[1];
+        
+        if (decimalString && decimalString.length > 3) {
+        // Limit to 9 decimal places
+          let limitedNumber = parseFloat(number.toFixed(3));
+          return limitedNumber;
+        } else {
+          return number;
+        }
+    }
+
+    // Function that handles the reset or the result action
+    const resetOrResult = (operation) => {
+        if (operation === 'reset') {
+            operatorClicked = false;
+            firstIsNegative = false;
+            secondIsNegative = false;
+            firstValueToCalculate = 0;
+            secondValueToCalculate = 0;
+            firstValueEntry = [];
+            secondValueEntry = [];
+            result = 0;
+        } else {
+            operatorClicked = false;
+            firstValueToCalculate = result;
+            firstValueEntry = [];
+            firstValueEntry.push(result)
+            secondValueToCalculate = 0;
+            secondValueEntry = [];
+        }
+    }
+
+    // Function that checks if the comma has already been entered
+    const checkComma = (arr) => {
+        let hasComma = false;
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].includes(",")) {
+            hasComma = true;
+            break;
+          }
+        }
+        return hasComma;
+    }
+
+    // Function that manages the entries of the first & second values and the comma
+    const addValues = (entry, value, id) => {
+        if (id === ',') {
+            if (checkComma(value) === false) {
+                value.push(entry.replace(/\s/g, ''))
+                calculatorScreen.text((value.join('')));
+            }
+        } else {
+            value.push(entry.replace(/\s/g, ''))
+            calculatorScreen.text((value.join('')));
+        }
+    }
+      
+    // Function that manages the result cases depending on the operator
+    const calculateAndDisplayResult = (operator, firstValue, secondValue) => {
+        var result;
+    
+        switch (operator) {
+            case "+":
+                result = firstValue + secondValue;
+                break;
+    
+            case "-":
+                result = firstValue - secondValue;
+                break;
+    
+            case "x":
+                result = firstValue * secondValue;
+                break;
+                    
+            case "/":
+                result = firstValue / secondValue;
+                break;
+    
+            default:
+                console.log('End')
+                return;
+        }
+    
+        calculatorScreen.text(formatNumber(result).toString().replace('.' , ','));
+        resetOrResult('result');
+    }
 
     // Calculator algorithm
     $('.number, .comma').on('click', function() {
+        if (result !== 0 && operatorClicked === false) {
+            resetOrResult('reset');
+        }
+
         if (operatorClicked === false) {
-            entry = $(this).text();
-            firstValueEntry.push(entry.replace(/\s/g, ''))
-            $('.display').text((firstValueEntry.join('')));
+            addValues($(this).text(), firstValueEntry, $(this).attr('id'))
         } else {
-            entry = $(this).text();
-            secondValueEntry.push(entry.replace(/\s/g, ''));
-            $('.display').text((secondValueEntry.join('')));
+            addValues($(this).text(), secondValueEntry, $(this).attr('id'))
         }
     })
 
     $('.reset').on('click', function() {
-        $('.display').text(0);
-        operatorClicked = false;
-        firstValueToCalculate = 0;
-        secondValueToCalculate = 0;
-        firstValueEntry = [];
-        secondValueEntry = [];
-        result = 0;
+        calculatorScreen.text(0);
+        resetOrResult('reset');
     })
 
     $('.operator').on('click', function() {
         operatorClicked = true;
         typeOfOperator = $(this).attr('id')
-        firstValueToCalculate = parseFloat($('.display').text().replace(',', '.'));
-
-        $('.display').text(0);
-
-        if (!!result) {
-            firstValueToCalculate = result
-        }
+        firstValueToCalculate = parseFloat(calculatorScreen.text().replace(',', '.'));
     })
 
     $('.negative').on('click', function() {
-        if (operatorClicked === false) {
-            firstValueEntry.unshift('-')
-            $('.display').text((firstValueEntry.join('')));
-        } else {
-            secondValueEntry.unshift('-')
-            $('.display').text((secondValueEntry.join('')));
+        if (firstValueEntry.length !== 0 && firstIsNegative === false) {
+            firstIsNegative = true;
+            let firstNegative = Number(-Math.abs(firstValueEntry.join('')))
+            calculatorScreen.text(firstNegative.toString());
+        } else if (firstIsNegative === true) {
+            firstIsNegative = false;
+            let firstPositive = Number(Math.abs(firstValueEntry.join('')))
+            calculatorScreen.text(firstPositive.toString());
         }
         
-    })
-    
-    $('.equal').on('click', function() {
-        secondValueToCalculate = parseFloat($('.display').text().replace(',', '.'));
-
-        switch (typeOfOperator) {
-            case "+":
-                result = firstValueToCalculate + secondValueToCalculate;
-                $('.display').text(result.toString().replace('.' , ','));
-                break;
-
-            case "-":
-                result = firstValueToCalculate - secondValueToCalculate;
-                $('.display').text(result.toString().replace('.' , ','));
-                break;
-
-            case "x":
-                result = firstValueToCalculate * secondValueToCalculate;
-                $('.display').text(result.toString().replace('.' , ','));
-                break;
-                
-            case "/":
-                result = firstValueToCalculate / secondValueToCalculate;
-                $('.display').text(result.toString().replace('.' , ','));
-                break;
-
-            default:
-                console.log('End')
-                break;
+        if (secondValueEntry.length !== 0 && secondIsNegative === false) {
+            secondIsNegative = true;
+            let secondNegative = Number(-Math.abs(secondValueEntry.join('')))
+            calculatorScreen.text(secondNegative.toString());
+        } else if (secondIsNegative === true) {
+            secondIsNegative = false;
+            let secondPositive = Number(Math.abs(secondValueEntry.join('')))
+            calculatorScreen.text(secondPositive.toString());
         }
     })
+      
+    $('.equal').on('click', function() {
+        secondValueToCalculate = parseFloat(calculatorScreen.text().replace(',', '.'));
+    
+        calculateAndDisplayResult(typeOfOperator, firstValueToCalculate, secondValueToCalculate);
+    });
 
     // Clock algorithm
-    function getDateTime () {
+    const getDateTime = () => {
         let now = new Date(); 
         let month = now.getMonth()+1;
         let day = now.getDate();
