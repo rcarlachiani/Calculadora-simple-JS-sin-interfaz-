@@ -45,62 +45,54 @@ $(function () {
         }
     }
 
-    // Function that checks if the comma has already been entered
-    const checkComma = (arr) => {
-        let hasComma = false;
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].includes(",")) {
-            hasComma = true;
-            break;
-          }
-        }
-        return hasComma;
-    }
-
     // Function that manages the entries of the first & second values and the comma
     const addValues = (entry, value, id) => {
         if (id === ',') {
-            if (checkComma(value) === false) {
-                value.push(entry.replace(/\s/g, ''))
-                calculatorScreen.text((value.join('')));
+            if (value.length === 0) {
+                value.push('0');
+            }
+            if (!value.includes(',')) {
+                value.push(',');
             }
         } else {
-            value.push(entry.replace(/\s/g, ''))
-            calculatorScreen.text((value.join('')));
+            value.push(entry.replace(/\s/g, ''));
         }
-    }
+        calculatorScreen.text(value.join(''));
+      }      
+      
       
     // Function that manages the result cases depending on the operator
     const calculateAndDisplayResult = (operator, firstValue, secondValue) => {
-        var result;
+        let switchResult;
     
         switch (operator) {
             case "+":
-                result = firstValue + secondValue;
+                switchResult = firstValue + secondValue;
                 break;
     
             case "-":
-                result = firstValue - secondValue;
+                switchResult = firstValue - secondValue;
                 break;
     
             case "x":
-                result = firstValue * secondValue;
+                switchResult = firstValue * secondValue;
                 break;
                     
             case "/":
-                result = firstValue / secondValue;
+                switchResult = firstValue / secondValue;
                 break;
     
             default:
                 console.log('End')
                 return;
         }
-    
-        calculatorScreen.text(formatNumber(result).toString().replace('.' , ','));
+        
+        result = switchResult;
+        calculatorScreen.text(formatNumber(switchResult).toString().replace('.' , ','));
         resetOrResult('result');
     }
 
-    // Calculator algorithm
+    // OnClick functions and actions
     $('.number, .comma').on('click', function() {
         if (result !== 0 && operatorClicked === false) {
             resetOrResult('reset');
@@ -127,22 +119,22 @@ $(function () {
     $('.negative').on('click', function() {
         if (firstValueEntry.length !== 0 && firstIsNegative === false) {
             firstIsNegative = true;
-            let firstNegative = Number(-Math.abs(firstValueEntry.join('')))
-            calculatorScreen.text(firstNegative.toString());
+            let firstNegative = Number(-Math.abs(firstValueEntry.join('').replace(',', '.')))
+            calculatorScreen.text(formatNumber(firstNegative).toString().replace('.', ','));
         } else if (firstIsNegative === true) {
             firstIsNegative = false;
-            let firstPositive = Number(Math.abs(firstValueEntry.join('')))
-            calculatorScreen.text(firstPositive.toString());
+            let firstPositive = Number(Math.abs(firstValueEntry.join('').replace(',', '.')))
+            calculatorScreen.text(formatNumber(firstPositive).toString().replace('.', ','));
         }
         
         if (secondValueEntry.length !== 0 && secondIsNegative === false) {
             secondIsNegative = true;
-            let secondNegative = Number(-Math.abs(secondValueEntry.join('')))
-            calculatorScreen.text(secondNegative.toString());
+            let secondNegative = Number(-Math.abs(secondValueEntry.join('').replace(',', '.')))
+            calculatorScreen.text(formatNumber(secondNegative).toString().replace('.', ','));
         } else if (secondIsNegative === true) {
             secondIsNegative = false;
-            let secondPositive = Number(Math.abs(secondValueEntry.join('')))
-            calculatorScreen.text(secondPositive.toString());
+            let secondPositive = Number(Math.abs(secondValueEntry.join('').replace(',', '.')))
+            calculatorScreen.text(formatNumber(secondPositive).toString().replace('.', ','));
         }
     })
       
