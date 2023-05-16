@@ -1,6 +1,7 @@
 $(function () {
     // Variables
     const calculatorScreen = $('.display');
+    let screenParagraph;
     let firstValueEntry = [];
     let secondValueEntry = [];
     let firstValueToCalculate = 0;
@@ -11,13 +12,23 @@ $(function () {
     let secondIsNegative = false;
     let typeOfOperator;
 
+    // Function that manages the font size of the display 
+    const updateFontSize = () => {
+        if (screenParagraph.length < 9) {
+            calculatorScreen.css('font-size', '50px');
+        } else if (screenParagraph.length >= 9 && screenParagraph.length <= 18) {
+            let fontSize = parseInt(calculatorScreen.css('font-size'));
+            calculatorScreen.css('font-size', (fontSize - 4) + 'px');
+        }
+    }
+
     // Function that formats the decimals results 
     const formatNumber = (number) => {
         let decimalString = number.toString().split('.')[1];
         
         if (decimalString && decimalString.length > 3) {
-        // Limit to 9 decimal places
-          let limitedNumber = parseFloat(number.toFixed(3));
+          // Deletes aditionals decimal zero's 'til the first number that isn't zero
+          let limitedNumber = parseFloat(number).toFixed(9).replace(/\.?0*$/, '');
           return limitedNumber;
         } else {
           return number;
@@ -47,19 +58,24 @@ $(function () {
 
     // Function that manages the entries of the first & second values and the comma
     const addValues = (entry, value, id) => {
+        const currentValue = value.join('');
+        
         if (id === ',') {
-            if (value.length === 0) {
-                value.push('0');
-            }
-            if (!value.includes(',')) {
-                value.push(',');
-            }
+          if (currentValue === '') {
+            value.push('0');
+          }
+          if (!currentValue.includes(',')) {
+            value.push(',');
+          }
         } else {
-            value.push(entry.replace(/\s/g, ''));
+          if (currentValue === '0') {
+            value.pop();
+          }
+          value.push(entry.replace(/\s/g, ''));
         }
+        
         calculatorScreen.text(value.join(''));
-      }      
-      
+    }
       
     // Function that manages the result cases depending on the operator
     const calculateAndDisplayResult = (operator, firstValue, secondValue) => {
@@ -100,13 +116,19 @@ $(function () {
 
         if (operatorClicked === false) {
             addValues($(this).text(), firstValueEntry, $(this).attr('id'))
+            screenParagraph = calculatorScreen.text()
+            updateFontSize();
         } else {
             addValues($(this).text(), secondValueEntry, $(this).attr('id'))
+            screenParagraph = '';
+            updateFontSize();
         }
     })
 
     $('.reset').on('click', function() {
         calculatorScreen.text(0);
+        screenParagraph = calculatorScreen.text()
+        updateFontSize();
         resetOrResult('reset');
     })
 
@@ -140,7 +162,6 @@ $(function () {
       
     $('.equal').on('click', function() {
         secondValueToCalculate = parseFloat(calculatorScreen.text().replace(',', '.'));
-    
         calculateAndDisplayResult(typeOfOperator, firstValueToCalculate, secondValueToCalculate);
     });
 
